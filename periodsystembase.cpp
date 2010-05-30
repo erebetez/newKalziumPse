@@ -19,11 +19,12 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.          *
  ***************************************************************************/
 
-#include <QVBoxLayout>
+
 #include <QGridLayout>
 #include <QPalette>
-// #include <QLayout> 
 #include <QLabel> 
+
+#include <qdebug.h>
 
 //Periodsystemdefinition
 #include <libkdeedu/pstables.h>
@@ -34,33 +35,57 @@ periodSystem::periodSystem(QWidget *parent)
  : QWidget(parent)
  {
    
-   QGridLayout *psBase = new QGridLayout();
+
    //QDeclaritivView
-   psBase->setContentsMargins(0,0,0,0);
-   psBase->setVerticalSpacing(1);
-   psBase->setHorizontalSpacing(1);
+
    
+   createTable(0);
+   
+ }
+
+void periodSystem::createTable(int tableTyp)
+{
+  if (layout()) {
+    
+    qDebug() << "delete layout";
+
+    delete layout();
+  }
+  
+    foreach ( element * i, m_elementItemList ) {
+        delete i;	
+    }
+    
+    m_elementItemList.clear();
+    
+    QGridLayout *psBase = new QGridLayout(this);
+//    psBase->setContentsMargins(0,0,0,0);
+   psBase->setVerticalSpacing(1);
+   psBase->setHorizontalSpacing(1);    
+    
     int group, period;
     psTables *tables = new psTables();
-    psTable  *table = tables->getTabletype( 0 );
+    psTable  *table = tables->getTabletype( tableTyp );    
     
-    QPalette myPalette;
-    
-//     int maxWidth = table->coordsMax().x();
-
     foreach (int intElement, table->elements()) {
-	if ( intElement <= 112) {
 	  group = table->elementCoords( intElement ).x();
 	  period = table->elementCoords( intElement ).y();
 	  
 	  element *Element = new element( intElement );
-
+	  m_elementItemList.append(Element);
+	  
 	  psBase->addWidget(Element, period, group);
+    }
+    
+    setLayout(psBase);
+}
 
-	}
-    }  
-   setLayout(psBase);
- }
+
+void periodSystem::slotChangeTable(int table)
+{
+    qDebug() << "change Table" << table;
+    createTable(table);
+}
 
 
 #include "periodsystembase.moc"

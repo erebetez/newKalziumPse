@@ -18,6 +18,8 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.          *
  ***************************************************************************/
+#ifndef ELEMENT_H
+#define ELEMENT_H
 
 #include <QWidget>
 #include <QLabel> 
@@ -26,7 +28,7 @@
 class element : public QLabel
 {
   public:
-  element(int thisElement);
+  element(int thisElement, QWidget *parent = 0);
 //   ~periodSystem();
   
 
@@ -42,3 +44,5 @@ class element : public QLabel
   virtual void mousePressEvent( QMouseEvent * e );  
   
 };
+
+#endif // ELEMENT_H

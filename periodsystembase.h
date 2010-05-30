@@ -19,19 +19,28 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.          *
  ***************************************************************************/
 
-#include <QWidget>
+#ifndef PERIODSYSTEMBASE_H
+#define PERIODSYSTEMBASE_H
 
+#include <QWidget>
+#include "element.h"
 
 class periodSystem : public QWidget
 {
+  Q_OBJECT
   public:
   periodSystem(QWidget *parent = 0);
 //   ~periodSystem();
   
+  public slots:
+   void slotChangeTable(int table);
   
   private:
+    void createTable(int table);
     
+    QList<element*> m_elementItemList;
 //     void draw();
     
   
 };
+#endif // PERIODSYSTEMBASE_H
