@@ -10,7 +10,7 @@ class periodSystem : public QWidget
   
   private:
     
-    void draw();
+//     void draw();
     
   
 };
