@@ -18,79 +18,49 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.          *
  ***************************************************************************/
+#ifndef ELEMENTLABEL_H
+#define ELEMENTLABEL_H
 
+#include <QWidget>
+#include <QLabel>
+#include <QColor>
 
-#include <openbabel/mol.h>
-#include <qdebug.h>
-#include <QMouseEvent>
-// #include <qnamespace.h>
-#include "element.h"
-
-element::element(int thisElement, QWidget *parent)
- : QLabel(parent)
+class elementLabel : public QLabel
 {
-    m_elementNumber = thisElement;
+Q_OBJECT
 
-    setAutoFillBackground(true);
-    
-//  	  color = 20 + ( ( group - maxWidth/2 ) * ( group - maxWidth/2 ) * 1.5 );
+public:
+    elementLabel(int thisElement, QWidget *parent = 0);
+//    ~elementLabel();
 
-    QString symbol = OpenBabel::etab.GetSymbol(m_elementNumber);
+Q_SIGNALS:
+    void elementClicked(int);
 
-    setText(symbol);
+public Q_SLOTS:
+    void slotResetElement();
+    void slotSetReferenceValue(double);
+    void slotSetSheme(int);
 
-    setAlignment(Qt::AlignCenter);
-    
-    setElementColor();
-}
+private:
+    void setElementColor();
+    void setElementColor(int typ);
+//     int checkStateForStyle();
+    QColor setOpenBabelColor();
 
-void element::setElementColor()
-{
-   setElementColor(-1);
-}
+    //could be a pair: ValueTyp and Value. Temperatur, 260K
+    double m_referenceValue;
 
-void element::setElementColor(int typ)
-{
-    QColor color;
-    
-    
-    switch( typ) {
-      case 1:
-	color = QColor(Qt::red);
-	break;
-	
-      default:
-	color = setOpenBabelColor();
-	break;
-    }
-    
-    QPalette myPalette;
-    
-    myPalette = palette();
+    int m_normalStatusColor;
 
-    myPalette.setColor(QPalette::Window, color);
+    int m_elementNumber;
 
-    setPalette(myPalette);
-}
+    // I don't realy need this
+    bool m_isActive;
 
-QColor element::setOpenBabelColor()
-{
-   std::vector<double> babelColor = OpenBabel::etab.GetRGB(m_elementNumber);
-    QColor color;
-    color.setRgbF(babelColor[0], babelColor[1], babelColor[2]);
-    
-    return color;
-  
-}
+protected:
+    virtual void mousePressEvent( QMouseEvent * e );
+    virtual void mouseMoveEvent( QMouseEvent * e );
 
+};
 
-
-void element::mousePressEvent(QMouseEvent* e)
-{
-
-    qDebug() << "mousePressed " << m_elementNumber << " button " << e->button(); 
-    if (e->button() == Qt::LeftButton ) {
-	setElementColor(1);
-    }
-
-}
+#endif // ELEMENT_H

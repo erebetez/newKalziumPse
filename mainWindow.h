@@ -27,17 +27,16 @@
 
 class mainWindow : public QWidget
 {
-//   Q_OBJECT
+  Q_OBJECT
   public:
   mainWindow(QWidget *parent = 0);
 //   ~periodSystem();
-  
-  
+
+
   private:
-    
-//     void draw();
-    
-  
+
+
+
 };
 
 #endif // MAINWINDOW_H

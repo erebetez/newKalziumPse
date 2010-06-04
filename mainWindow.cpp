@@ -20,8 +20,11 @@
  ***************************************************************************/
 #include <QVBoxLayout>
 #include <QHBoxLayout>
-#include <QLabel> 
+#include <QLabel>
 #include <QComboBox>
+#include <QSlider>
+#include <QPushButton>
+
 #include <libkdeedu/pstables.h>
 
 #include "mainWindow.h"
@@ -31,33 +34,40 @@
 mainWindow::mainWindow(QWidget *parent)
  : QWidget(parent)
  {
-   
    QVBoxLayout *mainLayout = new QVBoxLayout(this);
-   
+
    QHBoxLayout *topLayout = new QHBoxLayout();
-   
-   QLabel *title = new QLabel(QString("Typ:"));
-   
+
+   QSlider *slider = new QSlider();
+
+   slider->setRange(1, 118);
+   slider->setOrientation(Qt::Horizontal);
+
+
+   QPushButton *resetButton = new QPushButton();
+
+   resetButton->setText(QString("&Reset"));
+
+   QLabel *typ = new QLabel(QString("Typ:"));
+
    QComboBox *tables = new QComboBox();
-   
+
    foreach (QString item, psTables::instance()->tables()) {
       tables->addItem(item);
    }
-   
-   
-   
-   topLayout->addWidget(title);
+
+   topLayout->addWidget(slider);
+   topLayout->addWidget(resetButton);
+   topLayout->addWidget(typ);
    topLayout->addWidget(tables);
-   
-   
-   
+
    periodSystem *ps = new periodSystem(this);
-   
+
    mainLayout->addLayout(topLayout);
    mainLayout->addWidget(ps);
-   
+
    connect(tables, SIGNAL(currentIndexChanged(int)), ps, SLOT(slotChangeTable(int)));
-   
+   connect(resetButton, SIGNAL(clicked()), ps, SIGNAL(resetElements()));
  }
- 
-// #include "mainWindow.moc"
+
+#include "mainWindow.moc"

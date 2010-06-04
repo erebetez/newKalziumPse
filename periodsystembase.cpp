@@ -22,61 +22,65 @@
 
 #include <QGridLayout>
 #include <QPalette>
-#include <QLabel> 
+#include <QLabel>
 
 #include <qdebug.h>
 
 //Periodsystemdefinition
 #include <libkdeedu/pstables.h>
-#include "element.h"
+#include "elementLabel.h"
 #include "periodsystembase.h"
 
 periodSystem::periodSystem(QWidget *parent)
- : QWidget(parent)
- {
-   
+        : QWidget(parent)
+{
 
-   //QDeclaritivView
+    setAutoFillBackground(true);
+    QPalette myPalette;
 
-   
-   createTable(0);
-   
- }
+    myPalette = palette();
+    myPalette.setColor(QPalette::Window, QColor(Qt::lightGray));
+
+    setPalette(myPalette);
+
+    createTable(0);
+
+}
 
 void periodSystem::createTable(int tableTyp)
 {
-  if (layout()) {
-    
-    qDebug() << "delete layout";
+    if (layout()) {
+        delete layout();
+    }
 
-    delete layout();
-  }
-  
-    foreach ( element * i, m_elementItemList ) {
-        delete i;	
+    foreach ( elementLabel * i, m_elementItemList ) {
+        delete i;
     }
-    
+
     m_elementItemList.clear();
-    
+
     QGridLayout *psBase = new QGridLayout(this);
-//    psBase->setContentsMargins(0,0,0,0);
-   psBase->setVerticalSpacing(1);
-   psBase->setHorizontalSpacing(1);    
-    
+//     psBase->setContentsMargins(0,0,0,0);
+    psBase->setVerticalSpacing(1);
+    psBase->setHorizontalSpacing(1);
+
     int group, period;
-    psTables *tables = new psTables();
-    psTable  *table = tables->getTabletype( tableTyp );    
-    
+    psTable  *table = psTables::instance()->getTabletype( tableTyp );
+
     foreach (int intElement, table->elements()) {
-	  group = table->elementCoords( intElement ).x();
-	  period = table->elementCoords( intElement ).y();
-	  
-	  element *Element = new element( intElement );
-	  m_elementItemList.append(Element);
-	  
-	  psBase->addWidget(Element, period, group);
+        group = table->elementCoords( intElement ).x();
+        period = table->elementCoords( intElement ).y();
+
+        elementLabel *Element = new elementLabel( intElement, this);
+        m_elementItemList.append(Element);
+
+	connect(Element, SIGNAL(elementClicked(int)), this, SLOT(slotElementClicked(int)));
+	connect(this, SIGNAL(resetElements()), Element, SLOT(slotResetElement()));
+
+// 	connect(
+        psBase->addWidget(Element, period, group);
     }
-    
+//     delete table;
     setLayout(psBase);
 }
 
@@ -86,6 +90,15 @@ void periodSystem::slotChangeTable(int table)
     qDebug() << "change Table" << table;
     createTable(table);
 }
+
+void periodSystem::slotElementClicked(int thisElement)
+{
+  emit resetElements();
+
+  qDebug() << "got the " << thisElement;
+
+}
+
 
 
 #include "periodsystembase.moc"

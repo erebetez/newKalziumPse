@@ -23,7 +23,7 @@
 #define PERIODSYSTEMBASE_H
 
 #include <QWidget>
-#include "element.h"
+#include "elementLabel.h"
 
 class periodSystem : public QWidget
 {
@@ -31,16 +31,20 @@ class periodSystem : public QWidget
   public:
   periodSystem(QWidget *parent = 0);
 //   ~periodSystem();
-  
+
+  Q_SIGNALS:
+   void resetElements();
+
   public slots:
-   void slotChangeTable(int table);
-  
+   void slotChangeTable(int newtable);
+   void slotElementClicked(int elementNum);
+
   private:
     void createTable(int table);
-    
-    QList<element*> m_elementItemList;
+
+    QList<elementLabel*> m_elementItemList;
 //     void draw();
-    
-  
+
+
 };
 #endif // PERIODSYSTEMBASE_H
