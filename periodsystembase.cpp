@@ -27,7 +27,7 @@
 #include <qdebug.h>
 
 //Periodsystemdefinition
-#include <libkdeedu/pstables.h>
+#include <libkdeedu/psetables.h>
 #include "elementLabel.h"
 #include "periodsystembase.h"
 
@@ -65,7 +65,7 @@ void periodSystem::createTable(int tableTyp)
     psBase->setHorizontalSpacing(1);
 
     int group, period;
-    psTable  *table = psTables::instance()->getTabletype( tableTyp );
+    pseTable  *table = pseTables::instance()->getTabletype( tableTyp );
 
     foreach (int intElement, table->elements()) {
         group = table->elementCoords( intElement ).x();

@@ -1,5 +1,12 @@
 Some Ideas how to make the next-gen periodicsystem for kalzium
 
+-- Classic --
+QGridLayout vs. QGraphicsGridLayout
+
+
+
+-- With QML --
+
 QWidget
 -> QGridLayout
  -> Foreach Griditem: QDeclarativ

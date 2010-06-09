@@ -25,7 +25,7 @@
 #include <QSlider>
 #include <QPushButton>
 
-#include <libkdeedu/pstables.h>
+#include <libkdeedu/psetables.h>
 
 #include "mainWindow.h"
 #include "periodsystembase.h"
@@ -52,7 +52,7 @@ mainWindow::mainWindow(QWidget *parent)
 
    QComboBox *tables = new QComboBox();
 
-   foreach (QString item, psTables::instance()->tables()) {
+   foreach (QString item, pseTables::instance()->tables()) {
       tables->addItem(item);
    }
 
