@@ -12,7 +12,7 @@ include_directories(
    ${OPENBABEL2_INCLUDE_DIR}
    )
 
-set(newPeriodSystem_SRCS main.cpp mainWindow.cpp periodsystembase.cpp elementLabel.cpp)
+set(newPeriodSystem_SRCS main.cpp mainWindow.cpp periodsystembase.cpp elementLabel.cpp periodictablescene_p.cpp periodictableview.cpp elementitem_p.cpp)
 qt4_automoc(${newPeriodSystem_SRCS})
 add_executable(PeriodSystem ${newPeriodSystem_SRCS})
 target_link_libraries(PeriodSystem ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${OPENBABEL2_LIBRARIES} science)

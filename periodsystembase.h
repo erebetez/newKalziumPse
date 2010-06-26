@@ -41,6 +41,7 @@ class periodSystem : public QWidget
 
   private:
     void createTable(int table);
+    void createGraphicsTable(int table);
 
     QList<elementLabel*> m_elementItemList;
 //     void draw();

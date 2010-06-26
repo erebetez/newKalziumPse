@@ -30,6 +30,8 @@
 #include "mainWindow.h"
 #include "periodsystembase.h"
 
+#include "periodictableview.h"
+
 
 mainWindow::mainWindow(QWidget *parent)
  : QWidget(parent)
@@ -61,9 +63,12 @@ mainWindow::mainWindow(QWidget *parent)
    topLayout->addWidget(typ);
    topLayout->addWidget(tables);
 
-   periodSystem *ps = new periodSystem(this);
+//    periodSystem *ps = new periodSystem(this);
+
 
    mainLayout->addLayout(topLayout);
+//    QWidget * temp = new QWidget();
+   PeriodicTableView *ps = new PeriodicTableView();
    mainLayout->addWidget(ps);
 
    connect(tables, SIGNAL(currentIndexChanged(int)), ps, SLOT(slotChangeTable(int)));

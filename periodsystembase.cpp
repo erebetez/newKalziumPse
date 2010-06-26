@@ -23,6 +23,7 @@
 #include <QGridLayout>
 #include <QPalette>
 #include <QLabel>
+// #include <qgraphicsgridlayout.h>
 
 #include <qdebug.h>
 
@@ -43,7 +44,12 @@ periodSystem::periodSystem(QWidget *parent)
 
     setPalette(myPalette);
 
+
+
     createTable(0);
+
+
+
 
 }
 
@@ -77,13 +83,11 @@ void periodSystem::createTable(int tableTyp)
 	connect(Element, SIGNAL(elementClicked(int)), this, SLOT(slotElementClicked(int)));
 	connect(this, SIGNAL(resetElements()), Element, SLOT(slotResetElement()));
 
-// 	connect(
         psBase->addWidget(Element, period, group);
     }
 //     delete table;
     setLayout(psBase);
 }
-
 
 void periodSystem::slotChangeTable(int table)
 {
