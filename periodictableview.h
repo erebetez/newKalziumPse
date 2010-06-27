@@ -39,7 +39,7 @@
    * the class that should normally be instantiated in order to display a
    * Periodic Table.
    */
-  class A_EXPORT PeriodicTableView : public QGraphicsView
+  class PeriodicTableView : public QGraphicsView
   {
     Q_OBJECT
 
@@ -48,7 +48,7 @@
      * Constructor - contructs a new PeriodicTableView with an internal instance
      * of PeriodicTableScene.
      */
-    explicit PeriodicTableView(QWidget *parent = 0);
+    explicit PeriodicTableView(QGraphicsScene *scene, QWidget *parent = 0);
 
     /**
      * Destructor.
@@ -61,11 +61,16 @@
      */
     void elementClicked(int element);
 
+
+
   Q_SIGNALS:
     /**
      * Signal emitted when the active element in the PeriodicTableView changes.
      */
     void elementChanged(int element);
+
+
+
 
   private:
     /**

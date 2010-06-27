@@ -27,6 +27,7 @@
 
 #include <QGraphicsScene>
 
+#include "elementitem_p.h"
 
   /**
    * @class PeriodicTableScene
@@ -52,6 +53,9 @@
      */
     void elementChanged(int element);
 
+  private:
+
+
   protected:
     /**
      * Generic event handler, currently defaults to calling parent class
@@ -73,6 +77,7 @@
      * Not used at present.
      */
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+
   };
 
 

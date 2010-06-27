@@ -38,8 +38,10 @@
    * perdiodic table. It currently allows the setting of the proton number and
    * gets all other information from OpenBabel.
    */
-  class ElementItem : public QGraphicsItem
+  class ElementItem : public QGraphicsObject
   {
+//     Q_OBJECT
+    Q_PROPERTY(QPointF pos READ pos WRITE setPos)
   public:
     /**
      * Constructor. Should be called with the element number for this item. The

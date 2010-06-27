@@ -32,6 +32,13 @@ class mainWindow : public QWidget
   mainWindow(QWidget *parent = 0);
 //   ~periodSystem();
 
+ private Q_SLOTS:
+  void slotChangeTable(int table);
+
+  Q_SIGNALS:
+    //     // TODO make it more generic
+    void regularTable();
+    void longTable();
 
   private:
 

@@ -37,6 +37,7 @@
 #include <QFontMetrics>
 #include <QDebug>
 
+
   ElementItem::ElementItem(int elementNumber) : m_width(26), m_height(26),
     m_element(elementNumber), m_valid(false)
   {
@@ -99,3 +100,4 @@
     painter->drawText(rect, Qt::AlignCenter, m_symbol);
   }
 
+// #include "elementitem_p.moc"

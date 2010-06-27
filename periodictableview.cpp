@@ -29,27 +29,28 @@
 #include "periodictableview.h"
 #include "periodictablescene_p.h"
 
-  PeriodicTableView::PeriodicTableView(QWidget *parent) : QGraphicsView(parent)
+
+// #include <QGraphicsWidget>
+
+
+  PeriodicTableView::PeriodicTableView(QGraphicsScene * scene, QWidget *parent) : QGraphicsView(parent)
   {
-    // Use a small title bar (Qt::Tool) with no minimize or maximise buttons
-    setWindowFlags(Qt::Dialog | Qt::Tool);
 
-    PeriodicTableScene *table = new PeriodicTableScene;
-
-    table->setItemIndexMethod(QGraphicsScene::NoIndex);
-    table->setBackgroundBrush(Qt::white);
-
-    setScene(table);
+    setScene(scene);
+      // Use a small title bar (Qt::Tool) with no minimize or maximise buttons
+//     setWindowFlags(Qt::Dialog | Qt::Tool);
     setRenderHint(QPainter::Antialiasing);
-//     setWindowTitle(tr("Periodic Table"));
-//     resize(490, 270);
-//     setFixedSize(490, 270);
+    setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
+    setCacheMode(QGraphicsView::CacheBackground);
 
-
-
+/*
     connect(table, SIGNAL(elementChanged(int)),
-            this, SLOT(elementClicked(int)));
+            this, SLOT(elementClicked(int)));*/
+
+
   }
+
+
 
   PeriodicTableView::~PeriodicTableView()
   {
@@ -73,18 +74,22 @@
 
   void PeriodicTableView::resizeEvent ( QResizeEvent * event )
   {
-    qDebug() << "viewport " << viewport()->size().height() << "x" << viewport()->size().width();
-    qDebug() << "sizeHint " << scene()->sceneRect().height() << "x" << scene()->sceneRect().width();
+//     qDebug() << "viewport " << viewport()->size().height() << "x" << viewport()->size().width();
+//     qDebug() << "sizeHint " << scene()->sceneRect().height() << "x" << scene()->sceneRect().width();
+//
+//
+//     double faktor = viewport()->size().width() / scene()->sceneRect().width();
+//
+//
+//     qDebug() << faktor;
+//     resetTransform ();
+//     scale(faktor, faktor);
 
-
-    double faktor = viewport()->size().width() / scene()->sceneRect().width();
-
-
-    qDebug() << faktor;
-    resetTransform ();
-    scale(faktor, faktor);
-
+    QGraphicsView::resizeEvent(event);
+    fitInView(sceneRect(), Qt::KeepAspectRatio);
 
   }
+
+
 
 #include "periodictableview.moc"
