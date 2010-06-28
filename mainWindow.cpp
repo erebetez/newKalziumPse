@@ -70,17 +70,12 @@ mainWindow::mainWindow(QWidget *parent)
     int height = 26;
 
     PeriodicTableScene *table = new PeriodicTableScene();
-
 //     table->setItemIndexMethod(QGraphicsScene::NoIndex);
     table->setBackgroundBrush(Qt::white);
-
-
-
     table->setSceneRect(-10, -10, (pseTables::instance()->getTabletype( 0 )->coordsMax().x() + 1) * width, (pseTables::instance()->getTabletype( 0 )->coordsMax().y() + 1) * height);
 
 
     QList<ElementItem *> elementItems;
-
 
     foreach (int intElement, pseTables::instance()->getTabletype( 0 )->elements()) {
       ElementItem *item = new ElementItem(intElement);
@@ -159,11 +154,6 @@ mainWindow::mainWindow(QWidget *parent)
 
 
     states.start();
-
-
-
-
-
 
 
    connect(tables, SIGNAL(currentIndexChanged(int)), this, SLOT(slotChangeTable(int)));
