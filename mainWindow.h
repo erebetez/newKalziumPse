@@ -23,7 +23,11 @@
 #define MAINWINDOW_H
 
 #include <QWidget>
+#include <QtCore>
 
+#include "elementitem_p.h"
+#include "periodictableview.h"
+#include "periodictablescene_p.h"
 
 class mainWindow : public QWidget
 {
@@ -41,8 +45,8 @@ class mainWindow : public QWidget
     void longTable();
 
   private:
-
-
+    QStateMachine states;
+    QList<ElementItem *> m_elementItems;
 
 };
 

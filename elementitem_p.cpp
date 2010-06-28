@@ -100,4 +100,4 @@
     painter->drawText(rect, Qt::AlignCenter, m_symbol);
   }
 
-// #include "elementitem_p.moc"
+#include "elementitem_p.moc"

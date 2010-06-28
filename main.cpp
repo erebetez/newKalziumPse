@@ -7,5 +7,6 @@
      QApplication app(argc, argv);
      mainWindow widget;
      widget.show();
+
      return app.exec();
  }

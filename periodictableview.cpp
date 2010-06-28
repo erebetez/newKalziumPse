@@ -37,8 +37,6 @@
   {
 
     setScene(scene);
-      // Use a small title bar (Qt::Tool) with no minimize or maximise buttons
-//     setWindowFlags(Qt::Dialog | Qt::Tool);
     setRenderHint(QPainter::Antialiasing);
     setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
     setCacheMode(QGraphicsView::CacheBackground);
@@ -74,16 +72,6 @@
 
   void PeriodicTableView::resizeEvent ( QResizeEvent * event )
   {
-//     qDebug() << "viewport " << viewport()->size().height() << "x" << viewport()->size().width();
-//     qDebug() << "sizeHint " << scene()->sceneRect().height() << "x" << scene()->sceneRect().width();
-//
-//
-//     double faktor = viewport()->size().width() / scene()->sceneRect().width();
-//
-//
-//     qDebug() << faktor;
-//     resetTransform ();
-//     scale(faktor, faktor);
 
     QGraphicsView::resizeEvent(event);
     fitInView(sceneRect(), Qt::KeepAspectRatio);
