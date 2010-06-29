@@ -27,7 +27,7 @@
 #include <qdebug.h>
 
 #include "periodictableview.h"
-#include "periodictablescene_p.h"
+
 #include <libkdeedu/psetables.h>
 
 // #include <QGraphicsWidget>
@@ -40,59 +40,57 @@ PeriodicTableView::PeriodicTableView( QWidget *parent ) : QGraphicsView(parent)
     setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
     setCacheMode(QGraphicsView::CacheBackground);
 
-
+    m_tableTyp = 0;
 
     int width = 26;
     int height = 26;
 
-    PeriodicTableScene *table = new PeriodicTableScene();
-//     table->setItemIndexMethod(QGraphicsScene::NoIndex);
-    table->setBackgroundBrush(Qt::white);
-    table->setSceneRect(0, 0, (pseTables::instance()->getTabletype( 0 )->coordsMax().x() + 1) * width, (pseTables::instance()->getTabletype( 0 )->coordsMax().y() + 1) * height);
-
-
-
+    m_table = new PeriodicTableScene();
+    m_table->setItemIndexMethod(QGraphicsScene::NoIndex);
+    m_table->setBackgroundBrush(Qt::white);
 
     foreach (int intElement, pseTables::instance()->getTabletype( 0 )->elements()) {
         ElementItem *item = new ElementItem(intElement);
 //       item->setPos( pseTables::instance()->getTabletype( 0 )->elementCoords( intElement ).x() * width, pseTables::instance()->getTabletype( 0 )->elementCoords( intElement ).y() * height);
         item->setZValue(intElement);
         m_elementItems << item;
-        table->addItem(item);
+        m_table->addItem(item);
     }
-    setScene(table);
+    setScene(m_table);
 
     // States
     QState *rootState = new QState;
     rootState->setObjectName("root");
-    QState *regularState = new QState(rootState);
-    QState *longState = new QState(rootState);
-//     QState *centeredState = new QState(rootState);
 
-    // Values
-    for (int i = 0; i < m_elementItems.count(); ++i) {
-        ElementItem *item = m_elementItems.at(i);
+    QList<QState *> tableStates;
 
-        regularState->assignProperty(item, "pos",
-                                     QPointF(pseTables::instance()->getTabletype( 0 )->elementCoords( i + 1 ).x() * width,
-                                             pseTables::instance()->getTabletype( 0 )->elementCoords( i + 1 ).y() * height));
+    for (int j = 0; j < pseTables::instance()->tables().count(); ++j)
+    {
+        tableStates << new QState(rootState);
 
+        // Values
+        for (int i = 0; i < m_elementItems.count(); ++i) {
+            ElementItem *item = m_elementItems.at(i);
 
-        longState->assignProperty(item, "pos",
-                                  QPointF(pseTables::instance()->getTabletype( 2 )->elementCoords( i + 1 ).x() * width,
-                                          pseTables::instance()->getTabletype( 2 )->elementCoords( i + 1 ).y() * height));
+            int x = pseTables::instance()->getTabletype( j )->elementCoords( i + 1 ).x();
+            int y = pseTables::instance()->getTabletype( j )->elementCoords( i + 1 ).y();
 
-        // Centered
-//         centeredState->assignProperty(item, "pos", QPointF());
+	    // put the not needed elements a bit away
+            if ( x == 0) {
+                y = 10;
+                x = 10;
+            }
+
+            tableStates.at(j)->assignProperty(item, "pos",
+                                              QPointF(x* width, y * height));
+
+            connect(tableStates.at(j), SIGNAL(propertiesAssigned()), this, SLOT(slotResetSceneRect()));
+        }
     }
-
-
-
-
 
     states.addState(rootState);
     states.setInitialState(rootState);
-    rootState->setInitialState(regularState);
+    rootState->setInitialState(tableStates.at(0));
 
 
     QParallelAnimationGroup *group = new QParallelAnimationGroup;
@@ -106,25 +104,25 @@ PeriodicTableView::PeriodicTableView( QWidget *parent ) : QGraphicsView(parent)
     }
 
 
-    QAbstractTransition *trans = rootState->addTransition(this, SIGNAL(regularTable()), regularState);
+    QAbstractTransition *trans = rootState->addTransition(this, SIGNAL(regularTable()), tableStates.at(0));
     trans->addAnimation(group);
 
-    trans = rootState->addTransition(this, SIGNAL(longTable()), longState);
+    trans = rootState->addTransition(this, SIGNAL(shortTable()), tableStates.at(1));
     trans->addAnimation(group);
 
+    trans = rootState->addTransition(this, SIGNAL(longTable()), tableStates.at(2));
+    trans->addAnimation(group);
 
-//     QTimer timer;
-//     timer.start(125);
-//     timer.setSingleShot(true);
-//     trans = rootState->addTransition(&timer, SIGNAL(timeout()), regularState);
-//     trans->addAnimation(group);
+    trans = rootState->addTransition(this, SIGNAL(dTable()), tableStates.at(3));
+    trans->addAnimation(group);
+
+    trans = rootState->addTransition(this, SIGNAL(dzTable()), tableStates.at(4));
+    trans->addAnimation(group);
 
 
     states.start();
-    /*
-        connect(table, SIGNAL(elementChanged(int)),
-                this, SLOT(elementClicked(int)));*/
 
+    connect(m_table, SIGNAL(elementChanged(int)), this, SLOT(elementClicked(int)));
 
 }
 
@@ -133,15 +131,22 @@ PeriodicTableView::PeriodicTableView( QWidget *parent ) : QGraphicsView(parent)
 PeriodicTableView::~PeriodicTableView()
 {
     delete scene();
+//     delete m_table;
 }
 
-void PeriodicTableView::slotChangeTable(int table)
+void PeriodicTableView::slotChangeTable(int tableTyp)
 {
+    m_tableTyp = tableTyp;
 
-    switch (table) {
+    switch (m_tableTyp) {
     case 0:
         emit regularTable();
         qDebug() << "regular Table emited";
+        break;
+
+    case 1:
+        emit shortTable();
+        qDebug() << "s Table emited";
         break;
 
     case 2:
@@ -149,13 +154,32 @@ void PeriodicTableView::slotChangeTable(int table)
         qDebug() << "long Table emited";
         break;
 
+    case 3:
+        emit dTable();
+        qDebug() << "d Table emited";
+        break;
 
+    case 4:
+        emit dzTable();
+        qDebug() << "dz Table emited";
+        break;
     }
 }
+
+void PeriodicTableView::slotResetSceneRect()
+{
+    // TODO Should find a better variant than that...
+    int width = 26;
+    int height = 26;
+
+    m_table->setSceneRect(0, 0, (pseTables::instance()->getTabletype( m_tableTyp )->coordsMax().x() + 1) * width, (pseTables::instance()->getTabletype( m_tableTyp )->coordsMax().y() + 1) * height);
+}
+
 
 void PeriodicTableView::elementClicked(int id)
 {
     emit(elementChanged(id));
+    qDebug() << "element " <<  id;
 }
 
 bool PeriodicTableView::event(QEvent *e)
@@ -163,17 +187,10 @@ bool PeriodicTableView::event(QEvent *e)
     return QGraphicsView::event(e);
 }
 
-//   void PeriodicTableView::mouseDoubleClickEvent(QMouseEvent *)
-//   {
-//     close();
-//   }
-
 void PeriodicTableView::resizeEvent ( QResizeEvent * event )
 {
-
     QGraphicsView::resizeEvent(event);
     fitInView(sceneRect(), Qt::KeepAspectRatio);
-
 }
 
 

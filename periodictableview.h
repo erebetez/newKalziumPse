@@ -25,11 +25,12 @@
 #ifndef PERIODICTABLEVIEW_H
 #define PERIODICTABLEVIEW_H
 
-// #include <avogadro/global.h>
 #include <QtCore>
+#include <QGraphicsView>
 
 #include "elementitem_p.h"
-#include <QGraphicsView>
+#include "periodictablescene_p.h"
+
 
 
   /**
@@ -65,6 +66,7 @@
 
     void slotChangeTable(int table);
 
+    void slotResetSceneRect();
 
   Q_SIGNALS:
     /**
@@ -72,9 +74,12 @@
      */
     void elementChanged(int element);
 
-    //     // TODO make it more generic
+    // TODO make it more generic
     void regularTable();
+    void shortTable();
     void longTable();
+    void dTable();
+    void dzTable();
 
 
   private:
@@ -83,8 +88,12 @@
      */
     int m_element;
 
+    int m_tableTyp;
+
     QStateMachine states;
     QList<ElementItem *> m_elementItems;
+
+    PeriodicTableScene *m_table;
 
   protected:
     /**
@@ -93,10 +102,7 @@
      */
     bool event(QEvent *e);
 
-    /**
-     * Double click event - select an element and hide the PeriodicTableView.
-     */
-//     void mouseDoubleClickEvent(QMouseEvent *event);
+
      void resizeEvent ( QResizeEvent * event );
   };
 
