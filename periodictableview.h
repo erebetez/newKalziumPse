@@ -25,8 +25,10 @@
 #ifndef PERIODICTABLEVIEW_H
 #define PERIODICTABLEVIEW_H
 
-#include <avogadro/global.h>
+// #include <avogadro/global.h>
+#include <QtCore>
 
+#include "elementitem_p.h"
 #include <QGraphicsView>
 
 
@@ -48,7 +50,7 @@
      * Constructor - contructs a new PeriodicTableView with an internal instance
      * of PeriodicTableScene.
      */
-    explicit PeriodicTableView(QGraphicsScene *scene, QWidget *parent = 0);
+    explicit PeriodicTableView(QWidget *parent = 0);
 
     /**
      * Destructor.
@@ -61,6 +63,7 @@
      */
     void elementClicked(int element);
 
+    void slotChangeTable(int table);
 
 
   Q_SIGNALS:
@@ -69,7 +72,9 @@
      */
     void elementChanged(int element);
 
-
+    //     // TODO make it more generic
+    void regularTable();
+    void longTable();
 
 
   private:
@@ -77,6 +82,9 @@
      * Proton number of the active element.
      */
     int m_element;
+
+    QStateMachine states;
+    QList<ElementItem *> m_elementItems;
 
   protected:
     /**

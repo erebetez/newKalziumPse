@@ -31,7 +31,7 @@
 
 
 
-#include <openbabel/data.h>
+// #include <openbabel/data.h>
 
 #include <QGraphicsSceneMouseEvent>
 #include <QPainter>

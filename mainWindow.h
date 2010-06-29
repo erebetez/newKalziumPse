@@ -23,11 +23,6 @@
 #define MAINWINDOW_H
 
 #include <QWidget>
-#include <QtCore>
-
-#include "elementitem_p.h"
-#include "periodictableview.h"
-#include "periodictablescene_p.h"
 
 class mainWindow : public QWidget
 {
@@ -37,16 +32,13 @@ class mainWindow : public QWidget
 //   ~periodSystem();
 
  private Q_SLOTS:
-  void slotChangeTable(int table);
+
 
   Q_SIGNALS:
-    //     // TODO make it more generic
-    void regularTable();
-    void longTable();
+
 
   private:
-    QStateMachine states;
-    QList<ElementItem *> m_elementItems;
+
 
 };
 

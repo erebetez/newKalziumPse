@@ -25,11 +25,11 @@
 #include <QSlider>
 #include <QPushButton>
 
+
 #include <libkdeedu/psetables.h>
-#include <QtCore>
 
 #include "mainWindow.h"
-
+#include "periodictableview.h"
 
 
 
@@ -60,114 +60,16 @@ mainWindow::mainWindow(QWidget *parent)
    topLayout->addWidget(tables);
 
    mainLayout->addLayout(topLayout);
-
-
-    int width = 26;
-    int height = 26;
-
-    PeriodicTableScene *table = new PeriodicTableScene();
-//     table->setItemIndexMethod(QGraphicsScene::NoIndex);
-    table->setBackgroundBrush(Qt::white);
-    table->setSceneRect(0, 0, (pseTables::instance()->getTabletype( 0 )->coordsMax().x() + 1) * width, (pseTables::instance()->getTabletype( 0 )->coordsMax().y() + 1) * height);
-
-
-
-
-    foreach (int intElement, pseTables::instance()->getTabletype( 0 )->elements()) {
-      ElementItem *item = new ElementItem(intElement);
-//       item->setPos( pseTables::instance()->getTabletype( 0 )->elementCoords( intElement ).x() * width, pseTables::instance()->getTabletype( 0 )->elementCoords( intElement ).y() * height);
-      item->setZValue(intElement);
-      m_elementItems << item;
-      table->addItem(item);
-    }
-
-  // States
-    QState *rootState = new QState;
-    rootState->setObjectName("root");
-    QState *regularState = new QState(rootState);
-    QState *longState = new QState(rootState);
-//     QState *centeredState = new QState(rootState);
-
-    // Values
-    for (int i = 0; i < m_elementItems.count(); ++i) {
-        ElementItem *item = m_elementItems.at(i);
-
-        regularState->assignProperty(item, "pos",
-                                         QPointF(pseTables::instance()->getTabletype( 0 )->elementCoords( i + 1 ).x() * width,
-                                                 pseTables::instance()->getTabletype( 0 )->elementCoords( i + 1 ).y() * height));
-
-
-        longState->assignProperty(item, "pos",
-                                         QPointF(pseTables::instance()->getTabletype( 2 )->elementCoords( i + 1 ).x() * width,
-                                                 pseTables::instance()->getTabletype( 2 )->elementCoords( i + 1 ).y() * height));
-
-	// Centered
-//         centeredState->assignProperty(item, "pos", QPointF());
-    }
-
-
-    PeriodicTableView *ps = new PeriodicTableView(table);
+   PeriodicTableView *ps = new PeriodicTableView();
 
    mainLayout->addWidget(ps);
 
 
-    states.addState(rootState);
-    states.setInitialState(rootState);
-    rootState->setInitialState(regularState);
-
-
-    QParallelAnimationGroup *group = new QParallelAnimationGroup;
-    for (int i = 0; i < m_elementItems.count(); ++i) {
-        QPropertyAnimation *anim = new QPropertyAnimation(m_elementItems.at(i), "pos");
-//         anim->setDuration(750 + i * 25);
-        anim->setDuration( 1400 + i * 2);
-//         anim->setEasingCurve(QEasingCurve::InOutBack);
-	 anim->setEasingCurve(QEasingCurve::InOutExpo);
-        group->addAnimation(anim);
-    }
-
-
-    QAbstractTransition *trans = rootState->addTransition(this, SIGNAL(regularTable()), regularState);
-    trans->addAnimation(group);
-
-    trans = rootState->addTransition(this, SIGNAL(longTable()), longState);
-    trans->addAnimation(group);
-
-
-//     QTimer timer;
-//     timer.start(125);
-//     timer.setSingleShot(true);
-//     trans = rootState->addTransition(&timer, SIGNAL(timeout()), regularState);
-//     trans->addAnimation(group);
-
-
-    states.start();
-
-
-   connect(tables, SIGNAL(currentIndexChanged(int)), this, SLOT(slotChangeTable(int)));
+   connect(tables, SIGNAL(currentIndexChanged(int)), ps, SLOT(slotChangeTable(int)));
 
 //    connect(resetButton, SIGNAL(clicked()), ps, SIGNAL(resetElements()));
  }
 
-
- void mainWindow::slotChangeTable(int table)
-{
-
-   switch(table){
-     case 0:
-       emit regularTable();
-       qDebug() << "regular Table emited";
-       break;
-
-     case 2:
-       emit longTable();
-       qDebug() << "long Table emited";
-       break;
-
-
-   }
-
-}
 
 
 #include "mainWindow.moc"
