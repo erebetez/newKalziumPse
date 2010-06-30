@@ -176,7 +176,7 @@ void PeriodicTableView::slotResetSceneRect()
 
    QPoint coords = pseTables::instance()->getTabletype( m_tableTyp )->coordsMax();
 
-   if (m_table->sceneRect().width() < (coords.x() + 1) * width ) {
+   if (m_table->sceneRect().width() < (coords.x() + 1) * width || m_table->sceneRect().height() < (coords.y() + 1) * height ) {
        m_table->setSceneRect(0, 0, (coords.x() + 1) * width, (coords.y() + 1) * height);
    }
 }

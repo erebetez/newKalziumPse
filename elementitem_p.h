@@ -41,7 +41,7 @@
   class ElementItem : public QGraphicsObject
   {
     Q_OBJECT
-    Q_PROPERTY(QPointF pos READ pos WRITE setPos)
+//     Q_PROPERTY(QPointF pos READ pos WRITE setPos)
   public:
     /**
      * Constructor. Should be called with the element number for this item. The

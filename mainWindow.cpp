@@ -67,6 +67,7 @@ mainWindow::mainWindow(QWidget *parent)
 
    connect(tables, SIGNAL(currentIndexChanged(int)), ps, SLOT(slotChangeTable(int)));
 
+   resize( 800 , 600 );
 //    connect(resetButton, SIGNAL(clicked()), ps, SIGNAL(resetElements()));
  }
 
