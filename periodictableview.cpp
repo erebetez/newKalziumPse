@@ -72,19 +72,18 @@ PeriodicTableView::PeriodicTableView( QWidget *parent ) : QGraphicsView(parent)
         for (int i = 0; i < m_elementItems.count(); ++i) {
             ElementItem *item = m_elementItems.at(i);
 
-            int x = pseTables::instance()->getTabletype( j )->elementCoords( i + 1 ).x();
-            int y = pseTables::instance()->getTabletype( j )->elementCoords( i + 1 ).y();
+            QPoint coords = pseTables::instance()->getTabletype( j )->elementCoords( i + 1 );
+
 
 	    // put the not needed elements a bit away
-            if ( x == 0) {
-                y = 10;
-                x = 10;
+            if ( coords.x() == 0) {
+                coords.setY(-10);
             }
 
             tableStates.at(j)->assignProperty(item, "pos",
-                                              QPointF(x* width, y * height));
+                                              QPointF(coords.x() * width, coords.y() * height));
 
-            connect(tableStates.at(j), SIGNAL(propertiesAssigned()), this, SLOT(slotResetSceneRect()));
+//             connect(tableStates.at(j), SIGNAL(propertiesAssigned()), this, SLOT(slotResetSceneRect()));
         }
     }
 
@@ -131,6 +130,9 @@ PeriodicTableView::PeriodicTableView( QWidget *parent ) : QGraphicsView(parent)
 PeriodicTableView::~PeriodicTableView()
 {
     delete scene();
+//     foreach (ElementItem *item, m_elementItems){
+//       delete item;
+//     }
 //     delete m_table;
 }
 
@@ -168,11 +170,11 @@ void PeriodicTableView::slotChangeTable(int tableTyp)
 
 void PeriodicTableView::slotResetSceneRect()
 {
-    // TODO Should find a better variant than that...
-    int width = 26;
-    int height = 26;
 
-    m_table->setSceneRect(0, 0, (pseTables::instance()->getTabletype( m_tableTyp )->coordsMax().x() + 1) * width, (pseTables::instance()->getTabletype( m_tableTyp )->coordsMax().y() + 1) * height);
+//     int width = 26;
+//     int height = 26;
+//
+//     m_table->setSceneRect(0, 0, (pseTables::instance()->getTabletype( m_tableTyp )->coordsMax().x() + 1) * width, (pseTables::instance()->getTabletype( m_tableTyp )->coordsMax().y() + 1) * height);
 }
 
 
@@ -189,7 +191,19 @@ bool PeriodicTableView::event(QEvent *e)
 
 void PeriodicTableView::resizeEvent ( QResizeEvent * event )
 {
+  // TODO Should find a better variant than that...
+    int width = 26;
+    int height = 26;
+
+
     QGraphicsView::resizeEvent(event);
+
+    QPoint coords = pseTables::instance()->getTabletype( m_tableTyp )->coordsMax();
+
+    if (operator!=(m_table->sceneRect(), QRectF(0, 0, (coords.x() + 1) * width, (coords.y() + 1) * height)) ) {
+        m_table->setSceneRect(0, 0, (coords.x() + 1) * width, (coords.y() + 1) * height);
+    }
+
     fitInView(sceneRect(), Qt::KeepAspectRatio);
 }
 
