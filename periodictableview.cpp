@@ -83,7 +83,7 @@ PeriodicTableView::PeriodicTableView( QWidget *parent ) : QGraphicsView(parent)
             tableStates.at(j)->assignProperty(item, "pos",
                                               QPointF(coords.x() * width, coords.y() * height));
 
-//             connect(tableStates.at(j), SIGNAL(propertiesAssigned()), this, SLOT(slotResetSceneRect()));
+            connect(tableStates.at(j), SIGNAL(propertiesAssigned()), this, SLOT(slotResetSceneRect()));
         }
     }
 
@@ -170,11 +170,15 @@ void PeriodicTableView::slotChangeTable(int tableTyp)
 
 void PeriodicTableView::slotResetSceneRect()
 {
+ //should be caled bevor the animation.
+    int width = 26;
+    int height = 26;
 
-//     int width = 26;
-//     int height = 26;
-//
-//     m_table->setSceneRect(0, 0, (pseTables::instance()->getTabletype( m_tableTyp )->coordsMax().x() + 1) * width, (pseTables::instance()->getTabletype( m_tableTyp )->coordsMax().y() + 1) * height);
+   QPoint coords = pseTables::instance()->getTabletype( m_tableTyp )->coordsMax();
+
+   if (m_table->sceneRect().width() < (coords.x() + 1) * width ) {
+       m_table->setSceneRect(0, 0, (coords.x() + 1) * width, (coords.y() + 1) * height);
+   }
 }
 
 
