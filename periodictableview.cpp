@@ -33,6 +33,99 @@
 // #include <QGraphicsWidget>
 
 
+
+
+
+//![15]
+class StateSwitchEvent: public QEvent
+{
+public:
+    StateSwitchEvent()
+        : QEvent(Type(StateSwitchType))
+    {
+    }
+
+    StateSwitchEvent(int rand)
+        : QEvent(Type(StateSwitchType)),
+          m_rand(rand)
+    {
+    }
+
+    enum { StateSwitchType = QEvent::User + 256 };
+
+    int rand() const { return m_rand; }
+
+private:
+    int m_rand;
+};
+//![15]
+
+
+class StateSwitchTransition: public QAbstractTransition
+{
+public:
+    StateSwitchTransition(int rand)
+        : QAbstractTransition(),
+          m_rand(rand)
+    {
+    }
+
+protected:
+//![14]
+    virtual bool eventTest(QEvent *event)
+    {
+        return (event->type() == QEvent::Type(StateSwitchEvent::StateSwitchType))
+            && (static_cast<StateSwitchEvent *>(event)->rand() == m_rand);
+    }
+//![14]
+
+    virtual void onTransition(QEvent *) {}
+
+private:
+    int m_rand;
+};
+
+//![10]
+class StateSwitcher : public QState
+{
+    Q_OBJECT
+public:
+    StateSwitcher(QStateMachine *machine)
+        : QState(machine), m_stateCount(0), m_lastIndex(0)
+    { }
+//![10]
+
+//![11]
+    virtual void onEntry(QEvent *)
+    {
+        int n;
+        while ((n = (qrand() % m_stateCount + 1)) == m_lastIndex)
+        { }
+        m_lastIndex = n;
+        machine()->postEvent(new StateSwitchEvent(n));
+    }
+    virtual void onExit(QEvent *) {}
+//![11]
+
+//![12]
+    void addState(QState *state, QAbstractAnimation *animation) {
+        StateSwitchTransition *trans = new StateSwitchTransition(++m_stateCount);
+        trans->setTargetState(state);
+        addTransition(trans);
+        trans->addAnimation(animation);
+    }
+//![12]
+
+private:
+    int m_stateCount;
+    int m_lastIndex;
+};
+
+
+
+
+
+
 PeriodicTableView::PeriodicTableView( QWidget *parent ) : QGraphicsView(parent)
 {
 
@@ -64,6 +157,12 @@ PeriodicTableView::PeriodicTableView( QWidget *parent ) : QGraphicsView(parent)
 
     QList<QState *> tableStates;
 
+    StateSwitcher *stateSwitcher = new StateSwitcher(&states);
+    stateSwitcher->setObjectName("stateSwitcher");
+
+
+    QParallelAnimationGroup *group = new QParallelAnimationGroup;
+
     for (int j = 0; j < pseTables::instance()->tables().count(); ++j)
     {
         tableStates << new QState(rootState);
@@ -83,6 +182,15 @@ PeriodicTableView::PeriodicTableView( QWidget *parent ) : QGraphicsView(parent)
             tableStates.at(j)->assignProperty(item, "pos",
                                               QPointF(coords.x() * width, coords.y() * height));
 
+	    QPropertyAnimation *anim = new QPropertyAnimation(m_elementItems.at(j), "pos");
+    //         anim->setDuration(750 + i * 25);
+	    anim->setDuration( 1400 + i * 2);
+    //         anim->setEasingCurve(QEasingCurve::InOutBack);
+	    anim->setEasingCurve(QEasingCurve::InOutExpo);
+	    group->addAnimation(anim);
+
+            stateSwitcher->addState(tableStates.at(j), group);
+
             connect(tableStates.at(j), SIGNAL(propertiesAssigned()), this, SLOT(slotResetSceneRect()));
         }
     }
@@ -90,17 +198,6 @@ PeriodicTableView::PeriodicTableView( QWidget *parent ) : QGraphicsView(parent)
     states.addState(rootState);
     states.setInitialState(rootState);
     rootState->setInitialState(tableStates.at(0));
-
-
-    QParallelAnimationGroup *group = new QParallelAnimationGroup;
-    for (int i = 0; i < m_elementItems.count(); ++i) {
-        QPropertyAnimation *anim = new QPropertyAnimation(m_elementItems.at(i), "pos");
-//         anim->setDuration(750 + i * 25);
-        anim->setDuration( 1400 + i * 2);
-//         anim->setEasingCurve(QEasingCurve::InOutBack);
-        anim->setEasingCurve(QEasingCurve::InOutExpo);
-        group->addAnimation(anim);
-    }
 
 
     QAbstractTransition *trans = rootState->addTransition(this, SIGNAL(regularTable()), tableStates.at(0));
