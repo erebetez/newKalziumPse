@@ -73,13 +73,14 @@
      * Signal emitted when the active element in the PeriodicTableView changes.
      */
     void elementChanged(int element);
+    void tableChanged(int tableTyp);
 
-    // TODO make it more generic
-    void regularTable();
-    void shortTable();
-    void longTable();
-    void dTable();
-    void dzTable();
+//     // TODO make it more generic
+//     void regularTable();
+//     void shortTable();
+//     void longTable();
+//     void dTable();
+//     void dzTable();
 
 
   private:
@@ -90,7 +91,7 @@
 
     int m_tableTyp;
 
-    QStateMachine states;
+    QStateMachine m_states;
     QList<ElementItem *> m_elementItems;
 
     PeriodicTableScene *m_table;
