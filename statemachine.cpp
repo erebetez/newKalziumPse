@@ -4,7 +4,7 @@
 
 
 StateSwitcher::StateSwitcher(QStateMachine *machine)
-    : QState(machine)
+        : QState(machine)
 {
 }
 
@@ -19,8 +19,7 @@ void StateSwitcher::addState(QState *state, QAbstractAnimation *animation, int i
 
 void StateSwitcher::slotSwitchState(int n)
 {
-  qDebug() << "slot switch activ " << n;
-  machine()->postEvent(new StateSwitchEvent(n));
+    machine()->postEvent(new StateSwitchEvent(n));
 }
 
 

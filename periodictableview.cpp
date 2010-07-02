@@ -31,19 +31,15 @@
 
 #include <libkdeedu/psetables.h>
 
-// #include <QGraphicsWidget>
-
-
-
 
 PeriodicTableView::PeriodicTableView( QWidget *parent ) : QGraphicsView(parent)
 {
-
     setRenderHint(QPainter::Antialiasing);
     setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
     setCacheMode(QGraphicsView::CacheBackground);
 
     m_tableTyp = 0;
+    m_maxCoords = pseTables::instance()->getTabletype( m_tableTyp )->coordsMax();
 
     int width = 26;
     int height = 26;
@@ -54,39 +50,31 @@ PeriodicTableView::PeriodicTableView( QWidget *parent ) : QGraphicsView(parent)
 
     foreach (int intElement, pseTables::instance()->getTabletype( 0 )->elements()) {
         ElementItem *item = new ElementItem(intElement);
-//       item->setPos( pseTables::instance()->getTabletype( 0 )->elementCoords( intElement ).x() * width, pseTables::instance()->getTabletype( 0 )->elementCoords( intElement ).y() * height);
         item->setZValue(intElement);
         m_elementItems << item;
         m_table->addItem(item);
     }
     setScene(m_table);
 
-    // States
-//     QState *rootState = new QState;
-//     rootState->setObjectName("root");
 
     QList<QState *> tableStates;
 
-
-
     StateSwitcher *stateSwitcher = new StateSwitcher(&m_states);
-    stateSwitcher->setObjectName("stateSwitcher");
-
 
     QParallelAnimationGroup *group = new QParallelAnimationGroup;
+
 
     for (int j = 0; j < pseTables::instance()->tables().count(); ++j)
     {
         tableStates << new QState(stateSwitcher);
-//         QState *tableState = new QState(rootState);
 
-        // Values
+        // Values for each Element
         for (int i = 0; i < m_elementItems.count(); ++i) {
             ElementItem *item = m_elementItems.at(i);
 
             QPoint coords = pseTables::instance()->getTabletype( j )->elementCoords( i + 1 );
 
-	    // put the not needed elements a bit away
+            // put the not needed elements a bit away
             if ( coords.x() == 0) {
                 coords.setY(-10);
             }
@@ -94,106 +82,47 @@ PeriodicTableView::PeriodicTableView( QWidget *parent ) : QGraphicsView(parent)
             tableStates.at(j)->assignProperty(item, "pos",
                                               QPointF(coords.x() * width, coords.y() * height));
 
-	    QPropertyAnimation *anim = new QPropertyAnimation(m_elementItems.at(i), "pos");
-    //         anim->setDuration(750 + i * 25);
-	    anim->setDuration( 1400 + i * 2);
-    //         anim->setEasingCurve(QEasingCurve::InOutBack);
-	    anim->setEasingCurve(QEasingCurve::InOutExpo);
-	    group->addAnimation(anim);
-
-
-
-//             connect(tableState, SIGNAL(propertiesAssigned()), this, SLOT(slotResetSceneRect()));
+            // Animation for each element
+            QPropertyAnimation *anim = new QPropertyAnimation(m_elementItems.at(i), "pos");
+            anim->setDuration( 1400 + i * 2);
+            anim->setEasingCurve(QEasingCurve::InOutExpo);
+            group->addAnimation(anim);
         }
         stateSwitcher->addState(tableStates.at(j), group, j);
 
     }
+
     connect(this , SIGNAL(tableChanged(int)), stateSwitcher, SLOT(slotSwitchState(int)));
 
-//     m_states.addState(stateSwitcher);
     m_states.setInitialState(stateSwitcher);
     stateSwitcher->setInitialState(tableStates.at(0));
-
-
-//     QAbstractTransition *trans = rootState->addTransition(this, SIGNAL(regularTable()), tableStates.at(0));
-//     trans->addAnimation(group);
-//
-//     trans = rootState->addTransition(this, SIGNAL(shortTable()), tableStates.at(1));
-//     trans->addAnimation(group);
-//
-//     trans = rootState->addTransition(this, SIGNAL(longTable()), tableStates.at(2));
-//     trans->addAnimation(group);
-//
-//     trans = rootState->addTransition(this, SIGNAL(dTable()), tableStates.at(3));
-//     trans->addAnimation(group);
-//
-//     trans = rootState->addTransition(this, SIGNAL(dzTable()), tableStates.at(4));
-//     trans->addAnimation(group);
-
-
     m_states.start();
 
     connect(m_table, SIGNAL(elementChanged(int)), this, SLOT(elementClicked(int)));
 
 }
 
-
-
 PeriodicTableView::~PeriodicTableView()
 {
     delete scene();
-
-
-//     foreach (ElementItem *item, m_elementItems){
-//       delete item;
-//     }
-//     delete m_table;
 }
 
 void PeriodicTableView::slotChangeTable(int tableTyp)
 {
     m_tableTyp = tableTyp;
-    slotResetSceneRect();
+    m_maxCoords = pseTables::instance()->getTabletype( m_tableTyp )->coordsMax();
+    setBiggerSceneRect();
     emit tableChanged(m_tableTyp);
-//     switch (m_tableTyp) {
-//     case 0:
-//         emit regularTable();
-//         qDebug() << "regular Table emited";
-//         break;
-//
-//     case 1:
-//         emit shortTable();
-//         qDebug() << "s Table emited";
-//         break;
-//
-//     case 2:
-//         emit longTable();
-//         qDebug() << "long Table emited";
-//         break;
-//
-//     case 3:
-//         emit dTable();
-//         qDebug() << "d Table emited";
-//         break;
-//
-//     case 4:
-//         emit dzTable();
-//         qDebug() << "dz Table emited";
-//         break;
-//     }
 }
 
-void PeriodicTableView::slotResetSceneRect()
+void PeriodicTableView::setBiggerSceneRect()
 {
- //should be caled bevor the animation.
     int width = 26;
     int height = 26;
 
-   QPoint coords = pseTables::instance()->getTabletype( m_tableTyp )->coordsMax();
-
-   if (m_table->sceneRect().width() < (coords.x() + 1) * width || m_table->sceneRect().height() < (coords.y() + 1) * height ) {
-       m_table->setSceneRect(0, 0, (coords.x() + 1) * width, (coords.y() + 1) * height);
-   }
+    if (m_table->sceneRect().width() < (m_maxCoords.x() + 1) * width || m_table->sceneRect().height() < (m_maxCoords.y() + 1) * height ) {
+        m_table->setSceneRect(0, 0, (m_maxCoords.x() + 1) * width, (m_maxCoords.y() + 1) * height);
+    }
 }
 
 
@@ -210,17 +139,14 @@ bool PeriodicTableView::event(QEvent *e)
 
 void PeriodicTableView::resizeEvent ( QResizeEvent * event )
 {
-  // TODO Should find a better variant than that...
+    // TODO Should find a better variant than that...
     int width = 26;
     int height = 26;
 
-
     QGraphicsView::resizeEvent(event);
 
-    QPoint coords = pseTables::instance()->getTabletype( m_tableTyp )->coordsMax();
-
-    if (operator!=(m_table->sceneRect(), QRectF(0, 0, (coords.x() + 1) * width, (coords.y() + 1) * height)) ) {
-        m_table->setSceneRect(0, 0, (coords.x() + 1) * width, (coords.y() + 1) * height);
+    if (operator!=(m_table->sceneRect(), QRectF(0, 0, (m_maxCoords.x() + 1) * width, (m_maxCoords.y() + 1) * height)) ) {
+        m_table->setSceneRect(0, 0, (m_maxCoords.x() + 1) * width, (m_maxCoords.y() + 1) * height);
     }
 
     fitInView(sceneRect(), Qt::KeepAspectRatio);

@@ -25,14 +25,6 @@
 
 #include "periodictablescene_p.h"
 
-// #include "elementdetail_p.h"
-// #include "elementtranslator.h"
-
-
-
-
-// #include <openbabel/data.h>
-
 #include <QGraphicsSceneMouseEvent>
 #include <QPainter>
 #include <QStyleOption>
@@ -41,25 +33,9 @@
 #include <QDebug>
 
 
-// The use of postfix operators here is just fine!
-// We're using int for postfix, so it's almost zero overhead
-// krazy:excludeall=postfixop
-
   PeriodicTableScene::PeriodicTableScene(QObject *parent)
     : QGraphicsScene(parent)
   {
-
-
-//     ElementDetail *detail = new ElementDetail(1);
-//     detail->setPos(6.5 * width, 0.75 * height);
-//     addItem(detail);
-
-    // Connect the slot and the signal...
-//     connect(this, SIGNAL(elementChanged(int)),
-//             detail, SLOT(elementChanged(int)));
-
-
-
 
 
   }

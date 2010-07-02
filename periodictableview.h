@@ -33,20 +33,20 @@
 
 
 
-  /**
-   * @class PeriodicTableView periodictableview.h <avogadro/periodictableview.h>
-   * @author Marcus D. Hanwell
-   * @brief This class implements the view of the PeriodicTableScene.
-   *
-   * This is the class that actually draws the widget onto screen. This is
-   * the class that should normally be instantiated in order to display a
-   * Periodic Table.
-   */
-  class PeriodicTableView : public QGraphicsView
-  {
+/**
+ * @class PeriodicTableView periodictableview.h <avogadro/periodictableview.h>
+ * @author Marcus D. Hanwell
+ * @brief This class implements the view of the PeriodicTableScene.
+ *
+ * This is the class that actually draws the widget onto screen. This is
+ * the class that should normally be instantiated in order to display a
+ * Periodic Table.
+ */
+class PeriodicTableView : public QGraphicsView
+{
     Q_OBJECT
 
-  public:
+public:
     /**
      * Constructor - contructs a new PeriodicTableView with an internal instance
      * of PeriodicTableScene.
@@ -58,7 +58,7 @@
      */
     ~PeriodicTableView();
 
-  private Q_SLOTS:
+private Q_SLOTS:
     /**
      * Use this slot to change the active element.
      */
@@ -66,24 +66,19 @@
 
     void slotChangeTable(int table);
 
-    void slotResetSceneRect();
 
-  Q_SIGNALS:
+
+Q_SIGNALS:
     /**
      * Signal emitted when the active element in the PeriodicTableView changes.
      */
     void elementChanged(int element);
     void tableChanged(int tableTyp);
 
-//     // TODO make it more generic
-//     void regularTable();
-//     void shortTable();
-//     void longTable();
-//     void dTable();
-//     void dzTable();
 
+private:
+    void setBiggerSceneRect();
 
-  private:
     /**
      * Proton number of the active element.
      */
@@ -91,21 +86,22 @@
 
     int m_tableTyp;
 
+    QPoint m_maxCoords;
+
     QStateMachine m_states;
     QList<ElementItem *> m_elementItems;
 
     PeriodicTableScene *m_table;
 
-  protected:
+protected:
     /**
      * Generic event handler, currently defaults to calling parent class
      * (included for future compatibility)
      */
     bool event(QEvent *e);
 
-
-     void resizeEvent ( QResizeEvent * event );
-  };
+    void resizeEvent ( QResizeEvent * event );
+};
 
 
 
