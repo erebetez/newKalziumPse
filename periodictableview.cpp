@@ -33,7 +33,7 @@
 
 
 PeriodicTableView::PeriodicTableView( QWidget *parent )
-     : QGraphicsView(parent), m_width(26), m_height(26), m_tableTyp(0)
+     : QGraphicsView(parent), m_width(28), m_height(28), m_tableTyp(0)
 {
     setRenderHint(QPainter::Antialiasing);
     setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
@@ -53,6 +53,8 @@ PeriodicTableView::PeriodicTableView( QWidget *parent )
     }
 
     setScene(m_table);
+
+    connect(m_table, SIGNAL(elementChanged(int)), this, SLOT(elementClicked(int)));
 
     setupStatesAndAnimation();
 }
@@ -95,7 +97,6 @@ void PeriodicTableView::setupStatesAndAnimation()
     }
 
     connect(this , SIGNAL(tableChanged(int)), stateSwitcher, SLOT(slotSwitchState(int)));
-    connect(m_table, SIGNAL(elementChanged(int)), this, SLOT(elementClicked(int)));
 
     m_states.setInitialState(stateSwitcher);
     stateSwitcher->setInitialState(tableStates.at(0));
