@@ -32,17 +32,14 @@
 #include <libkdeedu/psetables.h>
 
 
-PeriodicTableView::PeriodicTableView( QWidget *parent ) : QGraphicsView(parent)
+PeriodicTableView::PeriodicTableView( QWidget *parent )
+     : QGraphicsView(parent), m_width(26), m_height(26), m_tableTyp(0)
 {
     setRenderHint(QPainter::Antialiasing);
     setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
     setCacheMode(QGraphicsView::CacheBackground);
 
-    m_tableTyp = 0;
     m_maxCoords = pseTables::instance()->getTabletype( m_tableTyp )->coordsMax();
-
-    int width = 26;
-    int height = 26;
 
     m_table = new PeriodicTableScene();
     m_table->setItemIndexMethod(QGraphicsScene::NoIndex);
@@ -54,15 +51,22 @@ PeriodicTableView::PeriodicTableView( QWidget *parent ) : QGraphicsView(parent)
         m_elementItems << item;
         m_table->addItem(item);
     }
+
     setScene(m_table);
 
+    setupStatesAndAnimation();
+}
 
+PeriodicTableView::~PeriodicTableView()
+{
+    delete scene();
+}
+
+void PeriodicTableView::setupStatesAndAnimation()
+{
     QList<QState *> tableStates;
-
     StateSwitcher *stateSwitcher = new StateSwitcher(&m_states);
-
     QParallelAnimationGroup *group = new QParallelAnimationGroup;
-
 
     for (int j = 0; j < pseTables::instance()->tables().count(); ++j)
     {
@@ -79,32 +83,23 @@ PeriodicTableView::PeriodicTableView( QWidget *parent ) : QGraphicsView(parent)
                 coords.setY(-10);
             }
 
-            tableStates.at(j)->assignProperty(item, "pos",
-                                              QPointF(coords.x() * width, coords.y() * height));
+            tableStates.at(j)->assignProperty(item, "pos", QPointF(coords.x() * m_width, coords.y() * m_height));
 
             // Animation for each element
             QPropertyAnimation *anim = new QPropertyAnimation(m_elementItems.at(i), "pos");
-            anim->setDuration( 1400 + i * 2);
+            anim->setDuration( 1600 + i * 2);
             anim->setEasingCurve(QEasingCurve::InOutExpo);
             group->addAnimation(anim);
         }
         stateSwitcher->addState(tableStates.at(j), group, j);
-
     }
 
     connect(this , SIGNAL(tableChanged(int)), stateSwitcher, SLOT(slotSwitchState(int)));
+    connect(m_table, SIGNAL(elementChanged(int)), this, SLOT(elementClicked(int)));
 
     m_states.setInitialState(stateSwitcher);
     stateSwitcher->setInitialState(tableStates.at(0));
     m_states.start();
-
-    connect(m_table, SIGNAL(elementChanged(int)), this, SLOT(elementClicked(int)));
-
-}
-
-PeriodicTableView::~PeriodicTableView()
-{
-    delete scene();
 }
 
 void PeriodicTableView::slotChangeTable(int tableTyp)
@@ -117,14 +112,18 @@ void PeriodicTableView::slotChangeTable(int tableTyp)
 
 void PeriodicTableView::setBiggerSceneRect()
 {
-    int width = 26;
-    int height = 26;
+    QRectF newRect(0,0, m_table->sceneRect().width(), m_table->sceneRect().height());
 
-    if (m_table->sceneRect().width() < (m_maxCoords.x() + 1) * width || m_table->sceneRect().height() < (m_maxCoords.y() + 1) * height ) {
-        m_table->setSceneRect(0, 0, (m_maxCoords.x() + 1) * width, (m_maxCoords.y() + 1) * height);
+    if (m_table->sceneRect().width() < (m_maxCoords.x() + 1) * m_width) {
+        newRect.setWidth((m_maxCoords.x() + 1) * m_width);
     }
-}
 
+    if ( m_table->sceneRect().height() < (m_maxCoords.y() + 1) * m_height ) {
+        newRect.setHeight((m_maxCoords.y() + 1) * m_height );;
+    }
+
+    m_table->setSceneRect(newRect);
+}
 
 void PeriodicTableView::elementClicked(int id)
 {
@@ -139,19 +138,12 @@ bool PeriodicTableView::event(QEvent *e)
 
 void PeriodicTableView::resizeEvent ( QResizeEvent * event )
 {
-    // TODO Should find a better variant than that...
-    int width = 26;
-    int height = 26;
-
-    QGraphicsView::resizeEvent(event);
-
-    if (operator!=(m_table->sceneRect(), QRectF(0, 0, (m_maxCoords.x() + 1) * width, (m_maxCoords.y() + 1) * height)) ) {
-        m_table->setSceneRect(0, 0, (m_maxCoords.x() + 1) * width, (m_maxCoords.y() + 1) * height);
+    if (operator!=(m_table->sceneRect(), QRectF(0, 0, (m_maxCoords.x() + 1) * m_width, (m_maxCoords.y() + 1) * m_height)) ) {
+        m_table->setSceneRect(0, 0, (m_maxCoords.x() + 1) * m_width, (m_maxCoords.y() + 1) * m_height);
     }
 
     fitInView(sceneRect(), Qt::KeepAspectRatio);
+    QGraphicsView::resizeEvent(event);
 }
-
-
 
 #include "periodictableview.moc"

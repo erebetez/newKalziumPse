@@ -33,8 +33,6 @@
 
 
 
-
-
 mainWindow::mainWindow(QWidget *parent)
  : QWidget(parent)
  {

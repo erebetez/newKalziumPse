@@ -78,6 +78,7 @@ Q_SIGNALS:
 
 private:
     void setBiggerSceneRect();
+    void setupStatesAndAnimation();
 
     /**
      * Proton number of the active element.
@@ -92,6 +93,11 @@ private:
     QList<ElementItem *> m_elementItems;
 
     PeriodicTableScene *m_table;
+
+     /**
+     * Width and height of the elements.
+     */
+    int m_width, m_height;
 
 protected:
     /**
