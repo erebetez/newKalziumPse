@@ -52,28 +52,28 @@ public:
     {
     }
 
-    StateSwitchEvent(int table)
+    StateSwitchEvent(int id)
             : QEvent(Type(StateSwitchType)),
-            m_table(table)
+            m_id(id)
     {}
 
     enum { StateSwitchType = QEvent::User + 256 };
 
-    int table() const {
-        return m_table;
+    int id() const {
+        return m_id;
     }
 
 private:
-    int m_table;
+    int m_id;
 };
 
 
 class StateSwitchTransition: public QAbstractTransition
 {
 public:
-    StateSwitchTransition(int table)
+    StateSwitchTransition(int id)
             : QAbstractTransition(),
-            m_table(table)
+            m_id(id)
     {}
 
 protected:
@@ -81,13 +81,13 @@ protected:
     virtual bool eventTest(QEvent *event)
     {
         return (event->type() == QEvent::Type(StateSwitchEvent::StateSwitchType))
-               && (static_cast<StateSwitchEvent *>(event)->table() == m_table);
+               && (static_cast<StateSwitchEvent *>(event)->id() == m_id);
     }
 
     virtual void onTransition(QEvent *) {}
 
 private:
-    int m_table;
+    int m_id;
 };
 
 

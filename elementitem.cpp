@@ -25,7 +25,7 @@
 
  **********************************************************************/
 
-#include "elementitem_p.h"
+#include "elementitem.h"
 // #include "elementtranslator.h"
 
 #include <openbabel/mol.h>
@@ -100,4 +100,4 @@
     painter->drawText(rect, Qt::AlignCenter, m_symbol);
   }
 
-#include "elementitem_p.moc"
+#include "elementitem.moc"

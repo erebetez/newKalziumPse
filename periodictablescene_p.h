@@ -27,7 +27,7 @@
 
 #include <QGraphicsScene>
 
-#include "elementitem_p.h"
+#include "elementitem.h"
 
   /**
    * @class PeriodicTableScene

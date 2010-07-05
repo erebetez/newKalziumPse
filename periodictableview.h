@@ -28,7 +28,7 @@
 #include <QtCore>
 #include <QGraphicsView>
 
-#include "elementitem_p.h"
+#include "elementitem.h"
 #include "periodictablescene_p.h"
 
 
