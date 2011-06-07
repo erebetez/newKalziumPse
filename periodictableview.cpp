@@ -37,7 +37,7 @@ PeriodicTableView::PeriodicTableView( QWidget *parent )
     setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
     setCacheMode(QGraphicsView::CacheBackground);
 
-    m_maxCoords = pseTables::instance()->getTabletype( m_tableTyp )->coordsMax();
+    m_maxCoords = pseTables::instance()->getTabletype( m_tableTyp )->tableSize();
 
     m_table = new PeriodicTableScene();
     m_table->setItemIndexMethod(QGraphicsScene::NoIndex);
@@ -104,7 +104,7 @@ void PeriodicTableView::setupStatesAndAnimation()
 void PeriodicTableView::slotChangeTable(int tableTyp)
 {
     m_tableTyp = tableTyp;
-    m_maxCoords = pseTables::instance()->getTabletype( m_tableTyp )->coordsMax();
+    m_maxCoords = pseTables::instance()->getTabletype( m_tableTyp )->tableSize();
     setBiggerSceneRect();
     emit tableChanged(m_tableTyp);
 }
