@@ -27,41 +27,72 @@
 #include "periodictableview.h"
 #include "statemachine.h"
 
+ #include <QDeclarativeEngine>
+ #include <QDeclarativeComponent>
+
 #include <libkdeedu/psetables.h>
+#include <qdeclarativecontext.h>
 
 
 PeriodicTableView::PeriodicTableView( QWidget *parent )
-     : QGraphicsView(parent), m_width(28), m_height(28), m_tableTyp(0)
+     : QDeclarativeView(parent)
 {
-    setRenderHint(QPainter::Antialiasing);
-    setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
-    setCacheMode(QGraphicsView::CacheBackground);
+//     setRenderHint(QPainter::Antialiasing);
+//     setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
+//     setCacheMode(QGraphicsView::CacheBackground);
 
-    m_maxCoords = pseTables::instance()->getTabletype( m_tableTyp )->tableSize();
+    qDebug() << "register elementitem";
+    qmlRegisterType<ElementItem>("ElementItem", 1,0, "ElementItem");
 
-    m_table = new PeriodicTableScene();
-    m_table->setItemIndexMethod(QGraphicsScene::NoIndex);
-    m_table->setBackgroundBrush(Qt::white);
+    qDebug() << "creating component";
+    QDeclarativeComponent component( engine(),  QUrl("../qml/Element.qml" ));
+   
+    
+    qDebug() << "set view source";
+    setSource( QUrl::fromLocalFile("../qml/periodicSystem.qml") );
+        
+    
+//     m_maxCoords = pseTables::instance()->getTabletype( m_tableTyp )->tableSize();
 
-    foreach (int intElement, pseTables::instance()->getTabletype( 0 )->elements()) {
-        ElementItem *item = new ElementItem(intElement);
-        item->setZValue(intElement);
-        m_elementItems << item;
-        m_table->addItem(item);
+    // pseTables::instance()->getTabletype( 0 )->elements()
+    
+    for( int intElement = 1; intElement < 5; ++intElement ) {
+      
+        qDebug() << "cast element " << intElement;
+        ElementItem *element = qobject_cast<ElementItem *>( component.create());
+        
+        if (element) {
+	  
+	  element->setSymbolname( QString::number(intElement) );
+	  
+	  qWarning() << "My element is the " << element->symbolname();
+	  
+	  QDeclarativeContext *theContext = new  QDeclarativeContext( rootContext() );
+
+	  theContext->setContextObject( element );
+	  
+ 	  m_elementItems << theContext;
+	  
+	} else {
+	    qWarning() << component.errors();
+	}
+
+
     }
 
-    setScene(m_table);
+    
 
-    connect(m_table, SIGNAL(elementChanged(int)), this, SLOT(elementClicked(int)));
 
-    setupStatesAndAnimation();
+//     setupStatesAndAnimation();
+    
+
 }
 
 PeriodicTableView::~PeriodicTableView()
 {
-    delete scene();
+//     delete scene();
 }
-
+/*
 void PeriodicTableView::setupStatesAndAnimation()
 {
     QList<QState *> tableStates;
@@ -143,6 +174,6 @@ void PeriodicTableView::resizeEvent ( QResizeEvent * event )
 
     fitInView(sceneRect(), Qt::KeepAspectRatio);
     QGraphicsView::resizeEvent(event);
-}
+}*/
 
 #include "periodictableview.moc"

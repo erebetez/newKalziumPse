@@ -26,7 +26,7 @@
 #ifndef ELEMENTITEM_P_H
 #define ELEMENTITEM_P_H
 
-#include <QGraphicsItem>
+#include <QDeclarativeItem>
 
 
   /**
@@ -38,65 +38,22 @@
    * perdiodic table. It currently allows the setting of the proton number and
    * gets all other information from OpenBabel.
    */
-  class ElementItem : public QGraphicsObject
+  class ElementItem : public QDeclarativeItem
   {
     Q_OBJECT
-//     Q_PROPERTY(QPointF pos READ pos WRITE setPos)
+    Q_PROPERTY(QString symbolname READ symbolname WRITE setSymbolname)
+
   public:
-    /**
-     * Constructor. Should be called with the element number for this item. The
-     * constructor uses setData to set the element number using the key 0. This
-     * is then used by PeriodicTable to figure out which element was clicked on.
-     */
-    ElementItem(int elementNumber = 0);
 
-    /**
-     * Destructor.
-     */
-    ~ElementItem();
+    ElementItem(QDeclarativeItem *parent = 0);
 
-    /**
-     * @return the bounding rectangle of the element item.
-     */
-    QRectF boundingRect() const;
-
-    /**
-     * @return the painter path which is also a rectangle in this case.
-     */
-    QPainterPath shape() const;
-
-    /**
-     * This is where most of the action takes place. The element box is drawn
-     * along with its symbol.
-     */
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
-               QWidget *widget);
+     QString symbolname() const;
+     void setSymbolname(const QString &name);
 
   private:
-    /**
-     * Indicates if element is well-formed (e.g., has non-empty symbol)
-     */
-    bool m_valid;
-    /**
-     * The element numbers symbol.
-     */
-    QString m_symbol;
 
-    /**
-     * The color of the element which will also be used as the background color
-     * for the item box.
-     */
-    QColor *m_color;
+    QString m_symbolname;
 
-    /**
-     * Width and height of the elements.
-     */
-    int m_width, m_height;
-
-    /**
-     * The proton number of the item - all other attributes are derived from this.
-     */
-    int m_element;
   };
 
 

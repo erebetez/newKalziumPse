@@ -26,10 +26,10 @@
 #define PERIODICTABLEVIEW_H
 
 #include <QtCore>
-#include <QGraphicsView>
 
 #include "elementitem.h"
 #include "periodictablescene_p.h"
+#include <qdeclarativeview.h>
 
 
 
@@ -42,7 +42,7 @@
  * the class that should normally be instantiated in order to display a
  * Periodic Table.
  */
-class PeriodicTableView : public QGraphicsView
+class PeriodicTableView : public QDeclarativeView
 {
     Q_OBJECT
 
@@ -58,55 +58,47 @@ public:
      */
     ~PeriodicTableView();
 
-private Q_SLOTS:
-    /**
-     * Use this slot to change the active element.
-     */
-    void elementClicked(int element);
-
-    void slotChangeTable(int table);
-
-
-
-Q_SIGNALS:
-    /**
-     * Signal emitted when the active element in the PeriodicTableView changes.
-     */
-    void elementChanged(int element);
-    void tableChanged(int tableTyp);
-
-
+// private Q_SLOTS:
+//     /**
+//      * Use this slot to change the active element.
+//      */
+//     void elementClicked(int element);
+// 
+//     void slotChangeTable(int table);
+// 
+// 
+// 
+// Q_SIGNALS:
+//     /**
+//      * Signal emitted when the active element in the PeriodicTableView changes.
+//      */
+//     void elementChanged(int element);
+//     void tableChanged(int tableTyp);
+// 
+// 
 private:
-    void setBiggerSceneRect();
-    void setupStatesAndAnimation();
+//     void setBiggerSceneRect();
+//     void setupStatesAndAnimation();
 
-    /**
-     * Proton number of the active element.
-     */
-    int m_element;
+//     int m_element;
+// 
+//     int m_tableTyp;
+// 
+//     QPoint m_maxCoords;
+// 
+//     QStateMachine m_states;
+    QList<QDeclarativeContext *> m_elementItems;
 
-    int m_tableTyp;
-
-    QPoint m_maxCoords;
-
-    QStateMachine m_states;
-    QList<ElementItem *> m_elementItems;
-
-    PeriodicTableScene *m_table;
-
-     /**
-     * Width and height of the elements.
-     */
-    int m_width, m_height;
-
-protected:
-    /**
-     * Generic event handler, currently defaults to calling parent class
-     * (included for future compatibility)
-     */
-    bool event(QEvent *e);
-
-    void resizeEvent ( QResizeEvent * event );
+//     int m_width, m_height;
+// 
+// protected:
+//     /**
+//      * Generic event handler, currently defaults to calling parent class
+//      * (included for future compatibility)
+//      */
+//     bool event(QEvent *e);
+// 
+//     void resizeEvent ( QResizeEvent * event );
 };
 
 

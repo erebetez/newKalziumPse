@@ -30,74 +30,22 @@
 
 #include <openbabel/mol.h>
 
-#include <QGraphicsSceneMouseEvent>
-#include <QPainter>
-#include <QStyleOption>
-#include <QFont>
-#include <QFontMetrics>
-#include <QDebug>
 
+ElementItem::ElementItem(QDeclarativeItem *parent)
+: QDeclarativeItem(parent)
+{
+}
 
-  ElementItem::ElementItem(int elementNumber) : m_width(26), m_height(26),
-    m_element(elementNumber), m_valid(false)
-  {
-    // Want these items to be selectable
-    setFlags(QGraphicsItem::ItemIsSelectable);
+  
+QString ElementItem::symbolname() const
+{
+   return m_symbolname;
+}
 
-    m_symbol = OpenBabel::etab.GetSymbol(m_element);
-    if(!m_symbol.isEmpty())
-      m_valid = true;
-    std::vector<double> color = OpenBabel::etab.GetRGB(m_element);
-    m_color = new QColor();
-    m_color->setRgbF(color[0], color[1], color[2]);
-    // Set some custom data to make it easy to figure out which element we are
-    setData(0, m_element);
-  }
+void ElementItem::setSymbolname(const QString &name)
+{
+   m_symbolname = name;
+}
 
-  ElementItem::~ElementItem()
-  {
-    delete m_color;
-  }
-
-  QRectF ElementItem::boundingRect() const
-  {
-    return QRectF(-m_width/2, -m_height/2, m_width, m_height);
-  }
-
-  QPainterPath ElementItem::shape() const
-  {
-    QPainterPath path;
-    path.addRect(-m_width/2, -m_height/2, m_width, m_height);
-    return path;
-  }
-
-  void ElementItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *,
-                          QWidget *)
-  {
-    if(!m_valid)
-      return;
-
-    // Fill the rectangle with the element colour
-    QColor bgColor;
-    QPen pen;
-    if (isSelected()) {
-      bgColor = QColor(*m_color).lighter(150);
-      pen.setColor(QColor(*m_color).darker(150));
-      pen.setWidth(4);
-    } else {
-      bgColor = QColor(*m_color);
-    }
-    painter->setPen(pen);
-    painter->setBrush(bgColor);
-    QRectF rect(-m_width/2, -m_height/2, m_width, m_height);
-    painter->drawRect(rect);
-    // Handle the case where the item is selected
-    if (bgColor.value() < 150)
-      pen.setColor(Qt::white);
-    else
-      pen.setColor(Qt::black);
-    painter->setPen(pen);
-    painter->drawText(rect, Qt::AlignCenter, m_symbol);
-  }
 
 #include "elementitem.moc"
