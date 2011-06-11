@@ -80,7 +80,10 @@ PeriodicTableView::PeriodicTableView( QWidget *parent )
 
     }
 
-    
+//     foreach( QDeclarativeContext *item, m_elementItems  ){
+//       ElementItem *returnEl = (ElementItem) item->contextObject();
+//       qWarning() << returnEl->symbolname();
+//     }
 
 
 //     setupStatesAndAnimation();
